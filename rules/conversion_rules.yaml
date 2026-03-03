@@ -1,0 +1,53 @@
+data_types:
+  VARIANT: JSON
+  TIMESTAMP_NTZ: DATETIME
+  TIMESTAMP_LTZ: DATETIME
+  TIMESTAMP_TZ: DATETIME
+  NUMBER(38,0): BIGINT
+  NUMBER: DECIMAL
+  VARCHAR: VARCHAR
+  ARRAY: ARRAY<JSON>
+  OBJECT: JSON
+
+functions:
+  FLATTEN: UNNEST
+  PARSE_JSON: PARSE_JSON
+  GET_PATH: JSON_EXTRACT
+  TO_TIMESTAMP: STR_TO_DATE
+  DATEADD: DATE_ADD
+  DATEDIFF: DATEDIFF
+  IFF: IF
+  LISTAGG: GROUP_CONCAT
+  TRY_CAST: CAST
+  ARRAY_CONSTRUCT: ARRAY
+  OBJECT_CONSTRUCT: JSON_OBJECT
+
+syntax_patterns:
+  - pattern: '::'
+    replacement: 'CAST_AS'
+    description: 'Convert :: casting to CAST(... AS ...)'
+  
+  - pattern: '\|\|'
+    replacement: 'CONCAT'
+    description: 'Convert || concatenation to CONCAT()'
+  
+  - pattern: '\$\d+'
+    replacement: 'NAMED_COLUMN'
+    description: 'Convert positional parameters to named columns'
+  
+  - pattern: 'QUALIFY'
+    replacement: 'SUBQUERY_WITH_ROW_NUMBER'
+    description: 'Convert QUALIFY clause to subquery with ROW_NUMBER()'
+
+ddl_conversions:
+  - pattern: 'CLUSTER BY'
+    replacement: 'DISTRIBUTED BY HASH'
+    description: 'Convert clustering to distribution'
+  
+  - pattern: 'TRANSIENT TABLE'
+    replacement: 'TABLE'
+    description: 'Remove TRANSIENT keyword'
+  
+  - pattern: 'STAGE'
+    replacement: 'EXTERNAL_TABLE'
+    description: 'Convert STAGE to external table reference'
